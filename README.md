@@ -55,3 +55,11 @@ To remain fast while providing accurate dates without getting blocked by YouTube
 1. The script first fetches the "flat" structure of the entire playlist (~1-2 seconds).
 2. It slices the top 5 and bottom 5 videos as "candidates."
 3. It selectively fetches detailed metadata (which contains verified `upload_date`) only for these candidates until it finds a match for today's date.
+
+## 🤖 AI Development Context
+This project was primarily developed and is maintained by an AI Agent. To ensure smooth iterations, continuous development, and context-sharing across different AI sessions, this repository utilizes standard AI-handoff documents:
+
+- **`PROJECT_CONTEXT.md`**: Provides the AI with the overarching business logic, project constraints, directory structures, and strict coding conventions. **When developing new features, the AI must read this first.**
+- **`HANDOFF.md`**: Acts as a state-saving document. It records the progress of the current session, completed features, known unresolved bugs, and the next steps. **The AI updates this at the end of its session and reads it at the beginning of the next.**
+
+If you are using another AI assistant to maintain or extend this code, please point the AI to read these two documents before it begins coding.
