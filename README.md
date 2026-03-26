@@ -3,12 +3,15 @@
 A lightweight Python tool that extracts the latest video URL from a YouTube channel or a custom playlist, **only if the video was published *today***. If there are no new videos published today, it safely returns nothing or alerts the user.
 
 ## Motivation & Use Case
-The primary goal of this project is to serve as the reliable first step in an **automated YouTube processing pipeline**. 
+The primary goal of this project is to serve as the critical first step in a **local YouTube transcription & summarization pipeline**.
 
-By automatically extracting the URL of a channel's daily new video, the output of this script can be seamlessly passed into downstream automation tasks, such as:
-1. Triggering an automated download using `yt-dlp` (e.g. grabbing the audio track).
-2. Generating a transcript via Whisper, WhisperX, or other speech-to-text models.
-3. Feeding the transcript directly into an LLM for daily summarization or insights extraction.
+**Why is this necessary?** 
+Many YouTube creators do not enable the platform's built-in transcription feature, making it impossible to directly scrape closed captions. While various third-party online tools offer transcription services, they typically require paid subscriptions.
+
+If you have a local machine capable of running LLMs (e.g. your own GPU running **Whisper**), you can bypass these paid services entirely. By automatically extracting a channel's newly published video URL via this script, you can seamlessly feed it into the following automated pipeline:
+1. Automatically download the audio track via `yt-dlp`.
+2. Generate an accurate, cost-free local transcript via Whisper / WhisperX.
+3. Feed the resulting text directly into a locally hosted LLM or APIs (like GPT-4) for daily summarization or insights extraction.
 
 ## Features
 - **Supports Both Formats**: Works seamlessly with YouTube Channel URLs (e.g., `/@YouTube`) and Custom Playlist URLs (e.g., `/playlist?list=...`).
