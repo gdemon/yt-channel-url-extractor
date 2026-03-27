@@ -1,21 +1,24 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-03-26 22:12 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-03-27 20:55 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：YouTube 最新影片自動檢測腳本初步開發完成與維護。
-- **系統狀態**：`main.py` 與 `extract.bat` 皆已完成並穩定運行。能夠透過比對 `upload_date` 來精準抓出指定 Channel 或 Playlist 中「今日發佈」的新片，並解決了 Cmd 亂碼與 `yt-dlp` Playlist 解析限制的問題。
+- **目前專注的任務**：維護 YouTube 最新影片自動檢測腳本，並新增了自動下載音檔 (`-d`) 的功能。
+- **系統狀態**：`main.py` 與 `extract.bat` 皆穩定運行，能夠抓出「今日發佈」的新片並支援音檔自動下載，以利後續 Whisper 處理。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
+- **新增下載功能 (本 Session 完成)**：
+  - 於 `main.py` 增加 `-d` (`--download`) 選項，可在發現今日新影片時，自動透過 `yt-dlp` 下載純音頻 (`format 251`)，配合 Whisper 進行本地端逐字稿需求。
+  - 修改 `extract.bat` 允許傳遞 `%*` 參數。
+  - 在 `scripts/test/` 新增 `test_download.bat`。
+
+## 📁 歷史更新 (Past Sessions)
 - **環境建置與結構建立**：
   - 建立 `requirements.txt` 加入 `yt-dlp` 依賴。
   - 編寫 `extract.bat` 提供 Windows 下一鍵自動啟動 `venv` 並帶入網址參數的便捷方式。
 - **核心擷取邏輯開發 (`main.py`)**：
-  - 實作了混合式抓取機制：先以 `extract_flat='in_playlist'` 高速讀取整體清單。
-  - 設計「雙向候選捕捉」：取列表的「前 5 部」與「後 5 部」影片作為候選，完美兼容了「由新到舊 (Channel)」與「由舊到新 (Playlist)」兩種不同的列表排序。
-  - 針對候選名單精準調用 `extract_flat=False` 獲取真實的 `upload_date`，解決了原先 Playlist 結構無法抓到上傳日期的 Bug。
+  - 實作了混合式抓取機制，設計「雙向候選捕捉」與 `extract_flat=False` 等機制。
 - **文檔撰寫與專案情境更新**：
-  - 完成 `README.md` 操作指南。
-  - 重構 `PROJECT_CONTEXT.md` 確保專案的目標與架構清晰。
+  - 完成 `README.md` 與 `PROJECT_CONTEXT.md`。
 
 ## 🚀 3. 下一步 / 待辦事項 (Next Steps / To-Do)
 - [ ] **通知整合 (Notification Integration)**：考慮未來將抓取結果串接 Discord, Telegram 或 Line Notify，達到即時推播通知。

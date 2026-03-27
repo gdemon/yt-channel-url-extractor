@@ -80,11 +80,26 @@ def get_today_latest_video_url(url: str) -> str:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="給定 Youtube 頻道或清單網址，若最新影片為今日發佈則抓出其網址。")
     parser.add_argument("channel_url", help="Youtube 網址 (例如頻道或播放清單)")
+    parser.add_argument("-d", "--download", action="store_true", help="若今日有新影片，自動下載其音檔 (format 251)")
     args = parser.parse_args()
     
     video_url = get_today_latest_video_url(args.channel_url)
     
     if video_url:
         print(video_url)
+        if args.download:
+            print("開始下載音檔...", file=sys.stderr)
+            ydl_opts_download = {
+                'format': '251',
+                'outtmpl': '%(title)s.%(ext)s',
+                'quiet': False,
+                'no_warnings': True,
+            }
+            try:
+                with yt_dlp.YoutubeDL(ydl_opts_download) as ydl:
+                    ydl.download([video_url])
+                print("音檔下載完成！", file=sys.stderr)
+            except Exception as e:
+                print(f"下載失敗: {e}", file=sys.stderr)
     else:
         print("今天該頻道/清單沒有發佈最新影片，或查無資料。", file=sys.stderr)

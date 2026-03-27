@@ -7,7 +7,7 @@ echo Checking YouTube URL: %CHANNEL_URL%
 echo.
 
 call venv\Scripts\activate.bat
-python main.py "%CHANNEL_URL%"
+python main.py "%CHANNEL_URL%" %*
 
 echo.
 echo Finished exploring URL.

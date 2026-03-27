@@ -49,6 +49,9 @@ python main.py "https://www.youtube.com/@YouTube"
 
 # For a Playlist
 python main.py "https://www.youtube.com/playlist?list=PLVu0pIxQ7F-yvxR_dCP_zBgChK3s84b99"
+
+# Download audio if a new video is found today
+python main.py "https://www.youtube.com/@YouTube" -d
 ```
 
 ### Method 2: Using the Windows Batch File (`extract.bat`)
@@ -59,7 +62,7 @@ For quick execution without opening a terminal every time:
    set CHANNEL_URL=https://www.youtube.com/playlist?list=PLVu0pIxQ7F-yvxR_dCP...
    ```
 3. Save the file.
-4. Simply double-click `extract.bat` in Windows File Explorer to run it. The window will pause at the end so you can view the output nicely.
+4. Simply double-click `extract.bat` in Windows File Explorer to run it. The window will pause at the end so you can view the output nicely. (Alternatively, run `extract.bat -d` from a terminal to download the audio automatically).
 
 ## How It Works
 To remain fast while providing accurate dates without getting blocked by YouTube:
