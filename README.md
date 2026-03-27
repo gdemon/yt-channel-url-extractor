@@ -70,6 +70,9 @@ To remain fast while providing accurate dates without getting blocked by YouTube
 2. It slices the top 5 and bottom 5 videos as "candidates."
 3. It selectively fetches detailed metadata (which contains verified `upload_date`) only for these candidates until it finds a match for today's date.
 
+## 🔒 Private Scripts
+If you want to create your own personal scripts, batch files, or workflows without having them tracked by Git, you can place them inside the `my_priv_script/` folder. This directory is included in `.gitignore`, ensuring that any API keys, custom commands, or private channel URLs you store here remain strictly local to your machine.
+
 ## 🤖 AI Development Context
 This project was primarily developed and is maintained by an AI Agent. To ensure smooth iterations, continuous development, and context-sharing across different AI sessions, this repository utilizes standard AI-handoff documents:
 

@@ -1,0 +1,12 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+
+# Private scripts
+my_priv_script/
