@@ -8,5 +8,10 @@ __pycache__/
 .idea/
 *.DS_Store
 
+# audio files
+*.m4a
+*.mp4
+*.webm
+
 # Private scripts
 my_priv_script/
