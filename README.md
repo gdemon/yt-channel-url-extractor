@@ -21,6 +21,7 @@ If you have a local machine capable of running LLMs (e.g. your own GPU running *
 ## Prerequisites
 - Python 3.x
 - Virtual Environment (`venv`)
+- NVIDIA GPU with CUDA support (Recommended for faster transcription)
 
 ## Installation
 
@@ -63,6 +64,16 @@ For quick execution without opening a terminal every time:
    ```
 3. Save the file.
 4. Simply double-click `extract.bat` in Windows File Explorer to run it. The window will pause at the end so you can view the output nicely. (Alternatively, run `extract.bat -d` from a terminal to download the audio automatically).
+
+### Method 3: Full Automation Pipeline (Download & Transcribe)
+If you want to fully automate the process of finding the newest video, downloading its audio, and transcribing it to text using local GPU acceleration, use `run_pipeline.py`:
+```bash
+python run_pipeline.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID"
+```
+This script acts as the master controller:
+1. It uses `main.py` to check for new videos today.
+2. It natively extracts the highest quality audio (without re-encoding) and retrieves the exact `webm` format file.
+3. It passes the audio file automatically to `asr_converter.py` which loads the `faster-whisper` AI model into your GPU and outputs a precise `.txt` transcript with timestamps.
 
 ## How It Works
 To remain fast while providing accurate dates without getting blocked by YouTube:

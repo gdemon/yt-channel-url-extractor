@@ -1,17 +1,21 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-03-27 20:55 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-03-31 00:40 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：維護 YouTube 最新影片自動檢測腳本，並新增了自動下載音檔 (`-d`) 的功能。
-- **系統狀態**：`main.py` 與 `extract.bat` 皆穩定運行，能夠抓出「今日發佈」的新片並支援音檔自動下載，以利後續 Whisper 處理。
+- **目前專注的任務**：將語音轉錄 API 廢棄，全面改為本機端 GPU 取向的 `faster-whisper` 加速轉換框架。
+- **系統狀態**：腳印整合完畢，透過 `run_pipeline.py` 自動執行取得新片、下載並驅動本機端 GPU 高速生成 `txt` 逐字稿。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
-- **新增下載功能 (本 Session 完成)**：
-  - 於 `main.py` 增加 `-d` (`--download`) 選項，可在發現今日新影片時，自動透過 `yt-dlp` 下載純音頻 (`format 251`)，配合 Whisper 進行本地端逐字稿需求。
-  - 修改 `extract.bat` 允許傳遞 `%*` 參數。
-  - 在 `scripts/test/` 新增 `test_download.bat`。
+- **純本地化 GPU 語音轉譯與流水線重構 (本 Session 完成)**：
+  - 由於不再綁定私有 API，已確認 `asr_converter.py` 無包含金鑰，並與整合腳本 `run_pipeline.py` 一同移至 Repo Root 下作為公開核心工具。
+  - 將轉譯後端引擎升級為 `faster-whisper`，自動偵測 CUDA 進行 `float16` 運算，確保在高效設備上維持極致速度。
+  - 編寫了 `run_pipeline.py` 取代複雜的 batch 字串處理，在 Python 記憶體內安全無縫傳遞正確副檔名 (webm) 的檔案。
+  - 同步更新了 `requirements.txt`、`README.md`、`PROJECT_CONTEXT.md` 等技術文件以反映此本機化架構改變。
 
 ## 📁 歷史更新 (Past Sessions)
+- **新增下載功能**：
+  - 於 `main.py` 增加 `-d` (`--download`) 選項自動透過 `yt-dlp` 下載純音頻以利後續處理。
+  - 修改 `extract.bat` 允許傳遞 `%*` 參數。在 `scripts/test/` 新增 `test_download.bat`。
 - **環境建置與結構建立**：
   - 建立 `requirements.txt` 加入 `yt-dlp` 依賴。
   - 編寫 `extract.bat` 提供 Windows 下一鍵自動啟動 `venv` 並帶入網址參數的便捷方式。
