@@ -1,16 +1,17 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-03-31 00:40 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-03-31 00:44 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
 - **目前專注的任務**：將語音轉錄 API 廢棄，全面改為本機端 GPU 取向的 `faster-whisper` 加速轉換框架。
 - **系統狀態**：腳印整合完畢，透過 `run_pipeline.py` 自動執行取得新片、下載並驅動本機端 GPU 高速生成 `txt` 逐字稿。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
-- **純本地化 GPU 語音轉譯與流水線重構 (本 Session 完成)**：
-  - 由於不再綁定私有 API，已確認 `asr_converter.py` 無包含金鑰，並與整合腳本 `run_pipeline.py` 一同移至 Repo Root 下作為公開核心工具。
-  - 將轉譯後端引擎升級為 `faster-whisper`，自動偵測 CUDA 進行 `float16` 運算，確保在高效設備上維持極致速度。
-  - 編寫了 `run_pipeline.py` 取代複雜的 batch 字串處理，在 Python 記憶體內安全無縫傳遞正確副檔名 (webm) 的檔案。
-  - 同步更新了 `requirements.txt`、`README.md`、`PROJECT_CONTEXT.md` 等技術文件以反映此本機化架構改變。
+- **純本地化 GPU 語音轉譯與流水線重構 (本 Session 總結)**：
+  - **核心轉換**：為了最大化利用使用者的 RTX 3090 顯卡並避開 Python 3.14 的 PyTorch 不穩定與 API 限制，毅然放棄私有 ASR API，全面改採 `faster-whisper` (CTranslate2) 為底層引擎，實現超高速本地化 GPU 轉錄。
+  - **管線建立**：撰寫 `run_pipeline.py` 自動銜接 `main.py` 與 `asr_converter.py`，保持原始 `webm` 音軌並安全傳遞，不再仰賴 .bat 做字串擷取。
+  - **結構重整**：排除原本綁定私有金鑰的疑慮後，將 `run_pipeline.py` 與 `asr_converter.py` 從 `my_priv_script` 深處移出至 Repo Root，成為專案的正式開源工具。
+  - **細節優化**：完善了 `my_priv_script/test_download.bat` 的絕對路徑指標（`%~dp0`），讓使用者不論身處哪個子資料夾執行都不會強迫改變工作目錄 (wd)，且輸出會留在使用者當前操作地。
+  - **文件同步**：對 `requirements.txt`、`README.md` (新增 Method 3) 及 `PROJECT_CONTEXT.md` (定義檔案職責) 完成了文件迭代維護。
 
 ## 📁 歷史更新 (Past Sessions)
 - **新增下載功能**：
