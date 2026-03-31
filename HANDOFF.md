@@ -1,9 +1,9 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-03-31 00:44 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-03-31 22:29 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：將語音轉錄 API 廢棄，全面改為本機端 GPU 取向的 `faster-whisper` 加速轉換框架。
-- **系統狀態**：腳印整合完畢，透過 `run_pipeline.py` 自動執行取得新片、下載並驅動本機端 GPU 高速生成 `txt` 逐字稿。
+- **目前專注的任務**：將語音轉錄全面改為本機端 GPU 取向的 `faster-whisper` 加速轉換框架，並解決相關 Windows 依賴問題。
+- **系統狀態**：腳印整合完畢，透過 `run_pipeline.py` 與 `fetch_podcast.py` 皆可自動執行取得新片或Podcast、下載並驅動本機端 GPU 高速產生 `txt` 逐字稿。CUDA 函式庫問題已獲得解決。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
 - **純本地化 GPU 語音轉譯與流水線重構 (本 Session 總結)**：
@@ -13,6 +13,13 @@
   - **細節優化**：完善了 `my_priv_script/test_download.bat` 的絕對路徑指標（`%~dp0`），讓使用者不論身處哪個子資料夾執行都不會強迫改變工作目錄 (wd)，且輸出會留在使用者當前操作地。
   - **文件同步**：對 `requirements.txt`、`README.md` (新增 Method 3) 及 `PROJECT_CONTEXT.md` (定義檔案職責) 完成了文件迭代維護。
 
+- **Podcast 抓取重構與測試指令新增 (本 Session 補充)**：
+  - **引數化網址**：修改了 `fetch_podcast.py`，將原本寫死的 RSS URL 改由 CLI 外部參數傳入，增加重用度。
+  - **新增測試批次檔**：遵循專案規範在 `scripts/test/` 中新增 `test_podcast.bat`，可用於快速測試帶入目標網址至 `fetch_podcast.py` 進行下載與 ASR 轉換流程。
+
+- **GPU 運行環境修復與警告抑制 (本 Session 補充)**：
+  - **補齊 CUDA DLLs**：針對 `faster-whisper` (CTranslate2) 在 Windows 下找不到 `cublas64_12.dll` 導致的崩潰，將 `nvidia-cublas-cu12` 及 `nvidia-cudnn-cu12` 寫入 `requirements.txt`。同時於 `asr_converter.py` 寫入啟動邏輯，動態注入 pip site-packages 路徑至系統 `PATH`，實現免安裝全域 CUDA Toolkit 的隨插即用。
+  - **清理終端機訊號**：在各腳本導入 `HF_HUB_DISABLE_SYMLINKS_WARNING=1` 以封鎖 HuggingFace Cache 系統在 Windows 沒有開發者權限時拋出的無意義警告，還給使用者乾淨的 Console 畫面。
 ## 📁 歷史更新 (Past Sessions)
 - **新增下載功能**：
   - 於 `main.py` 增加 `-d` (`--download`) 選項自動透過 `yt-dlp` 下載純音頻以利後續處理。

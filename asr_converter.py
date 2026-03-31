@@ -2,6 +2,24 @@ import sys
 import os
 import time
 
+# Suppress huggingface_hub symlink warning
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+
+# Dynamically add Nvidia pip packages to PATH for CTranslate2
+packages = [os.path.join(os.path.dirname(sys.executable), "Lib", "site-packages")]
+try:
+    import site
+    packages.extend(site.getsitepackages())
+except Exception:
+    pass
+
+for loc in set(packages):
+    cublas_path = os.path.join(loc, "nvidia", "cublas", "bin")
+    cudnn_path = os.path.join(loc, "nvidia", "cudnn", "bin")
+    for p in [cublas_path, cudnn_path]:
+        if os.path.exists(p) and p not in os.environ.get("PATH", ""):
+            os.environ["PATH"] = p + os.pathsep + os.environ.get("PATH", "")
+
 def convert_audio_to_text(file_path):
     if not os.path.exists(file_path):
         print(f"Error: File not found - {file_path}")
