@@ -15,6 +15,7 @@
 - `main.py`：核心業務邏輯，包含抓取播放清單、過濾候選影片，以及檢查上傳日期的程式碼。
 - `asr_converter.py`：本機端 Whisper 語音轉譯程式，依賴 `faster-whisper` 來達到極速 GPU 轉換。
 - `run_pipeline.py`：最高階的一鍵執行流水線，自動整合 `main.py` 與 `asr_converter.py` 處理下載並轉譯流程。
+- `run_pipeline_url.py`：直接傳入單一 YouTube 影片網址，略過頻道檢查每日影片環節，直接下載並轉譯的腳本。
 - `extract.bat`：Windows 下的快速啟動批次檔，會自動 source 虛擬環境並執行帶有目標 URL 的 Python 腳本。
 - `requirements.txt`：專案套件依賴清單。
 - `/venv/`：由使用者自行建置的 Python 虛擬環境目錄。
