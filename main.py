@@ -3,6 +3,17 @@ import yt_dlp
 from datetime import datetime
 import argparse
 
+class YTDLPQuietLogger:
+    def debug(self, msg):
+        pass
+    def warning(self, msg):
+        pass
+    def error(self, msg):
+        if "Private video" in msg:
+            pass
+        else:
+            print(msg, file=sys.stderr)
+
 def get_today_latest_video_url(url: str) -> str:
     """
     Extract the latest video URL from a YouTube channel or playlist if it was published today.
@@ -12,6 +23,7 @@ def get_today_latest_video_url(url: str) -> str:
         'extract_flat': 'in_playlist',
         'quiet': True,
         'no_warnings': True,
+        'logger': YTDLPQuietLogger(),
     }
     
     today_str = datetime.now().strftime('%Y%m%d')
@@ -46,6 +58,7 @@ def get_today_latest_video_url(url: str) -> str:
         'extract_flat': False,
         'quiet': True,
         'no_warnings': True,
+        'logger': YTDLPQuietLogger(),
     }
     
     latest_today_video = None
