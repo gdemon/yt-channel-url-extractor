@@ -5,9 +5,9 @@ import yt_dlp
 from main import get_today_latest_video_url
 from asr_converter import convert_audio_to_text
 
-def run_pipeline(url):
+def run_pipeline(url, cookies=None, cookies_from_browser=None):
     print(f"Checking URL: {url}")
-    video_url = get_today_latest_video_url(url)
+    video_url = get_today_latest_video_url(url, cookies=cookies, cookies_from_browser=cookies_from_browser)
     
     if not video_url:
         print("No new video published today. Exiting.")
@@ -24,6 +24,13 @@ def run_pipeline(url):
         'no_warnings': True,
     }
     
+    if cookies:
+        ydl_opts_download['cookiefile'] = cookies
+    elif cookies_from_browser:
+        ydl_opts_download['cookiesfrombrowser'] = (cookies_from_browser,)
+    elif os.path.exists('cookies.txt'):
+        ydl_opts_download['cookiefile'] = 'cookies.txt'
+        
     with yt_dlp.YoutubeDL(ydl_opts_download) as ydl:
         # download=True 順便下載檔案並取得詳細資訊
         info = ydl.extract_info(video_url, download=True)
@@ -42,9 +49,11 @@ def run_pipeline(url):
     print("\nPipeline completed successfully!")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python run_pipeline.py <youtube_url>")
-        sys.exit(1)
-        
-    url = sys.argv[1]
-    run_pipeline(url)
+    import argparse
+    parser = argparse.ArgumentParser(description="一鍵執行 YouTube 影片下載與 ASR 轉譯管線。")
+    parser.add_argument("youtube_url", help="Youtube 頻道或播放清單網址")
+    parser.add_argument("--cookies", help="Path to cookies file (e.g. cookies.txt)")
+    parser.add_argument("--cookies-from-browser", help="Browser to extract cookies from (e.g. chrome, firefox, edge)")
+    args = parser.parse_args()
+    
+    run_pipeline(args.youtube_url, cookies=args.cookies, cookies_from_browser=args.cookies_from_browser)

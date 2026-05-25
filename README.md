@@ -53,7 +53,16 @@ python main.py "https://www.youtube.com/playlist?list=PLVu0pIxQ7F-yvxR_dCP_zBgCh
 
 # Download audio if a new video is found today
 python main.py "https://www.youtube.com/@YouTube" -d
+
+# Bypass bot verification using cookies from a browser (e.g. chrome, firefox)
+python main.py "https://www.youtube.com/@YouTube" --cookies-from-browser chrome
+
+# Bypass bot verification using a specific cookies file
+python main.py "https://www.youtube.com/@YouTube" --cookies "C:\path\to\cookies.txt"
 ```
+
+> [!TIP]
+> **Bypassing Bot Verification**: If you encounter the error `Sign in to confirm you’re not a bot`, you can export your cookies in Netscape format and save them as `cookies.txt` in the project root directory. The script will automatically load it. For full details on cookie extraction and other browser options, see [cookies_guide.md](file:///D:/project_git/yt-channel-url-extractor/doc/cookies_guide.md).
 
 ### Method 2: Using the Windows Batch File (`extract.bat`)
 For quick execution without opening a terminal every time:

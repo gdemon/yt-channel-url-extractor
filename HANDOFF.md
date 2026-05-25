@@ -1,12 +1,17 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-04-09 22:50 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-05-25 22:50 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：將語音轉錄全面改為本機端 GPU 取向的 `faster-whisper` 加速轉換框架，並解決相關 Windows 依賴問題。
-- **系統狀態**：腳印整合完畢，透過 `run_pipeline.py` 與 `fetch_podcast.py` 皆可自動執行取得新片或Podcast、下載並驅動本機端 GPU 高速產生 `txt` 逐字稿。CUDA 函式庫問題已獲得解決。
+- **目前專注的任務**：解決 `yt-dlp` 的 YouTube 機器人防爬蟲/驗證問題，增加 Cookies 與瀏覽器 Cookie 提取功能。
+- **系統狀態**：全部主要指令已升級為 argparse 解析引數，支援 `--cookies` 及 `--cookies-from-browser`，並能在根目錄自動偵測 `cookies.txt` 以無痛載入。測試腳本與說明文件已同步完成。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
-- **錯誤訊息抑制與優化 (本 Session 補充)**：
+- **新增 Cookie 及瀏覽器 Cookie 驗證機制**：
+  - **自動偵測功能**：當專案根目錄下存在 `cookies.txt` 時，所有指令（`main.py`、`run_pipeline.py`、`run_pipeline_url.py`）會自動加載，無須額外參數。
+  - **命令列支援**：所有主要 Python 腳本皆升級為 `argparse`，並統一支援 `--cookies` 及 `--cookies-from-browser`。
+  - **腳本與文檔**：於 `scripts/test/` 新增 `test_cookies.bat`，並於 `doc/` 下新增 `cookies_guide.md` 提供完整指南。
+
+- **錯誤訊息抑制與優化 (先前 Session)**：
   - **略過 Private Video 警告**：為了解決 `yt-dlp` 在過濾候選清單時，遇到私人影片 (Private video) 會強迫在硬體主控台印出 `ERROR` 訊息的干擾問題，新增自定義 `YTDLPQuietLogger` 記錄器，精準過濾並隱藏該項錯誤，保持終端機輸出乾淨。
 
 - **純本地化 GPU 語音轉譯與流水線重構 (先前 Session)**：

@@ -4,7 +4,7 @@ import yt_dlp
 
 from asr_converter import convert_audio_to_text
 
-def run_pipeline_url(video_url):
+def run_pipeline_url(video_url, cookies=None, cookies_from_browser=None):
     print(f"Starting download for video URL: {video_url}")
     
     # 設定下載參數 (使用回原本的 251 format)
@@ -15,6 +15,13 @@ def run_pipeline_url(video_url):
         'no_warnings': True,
     }
     
+    if cookies:
+        ydl_opts_download['cookiefile'] = cookies
+    elif cookies_from_browser:
+        ydl_opts_download['cookiesfrombrowser'] = (cookies_from_browser,)
+    elif os.path.exists('cookies.txt'):
+        ydl_opts_download['cookiefile'] = 'cookies.txt'
+        
     with yt_dlp.YoutubeDL(ydl_opts_download) as ydl:
         # download=True 順便下載檔案並取得詳細資訊
         info = ydl.extract_info(video_url, download=True)
@@ -33,9 +40,11 @@ def run_pipeline_url(video_url):
     print("\nPipeline completed successfully!")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python run_pipeline_url.py <youtube_video_url>")
-        sys.exit(1)
-        
-    video_url = sys.argv[1]
-    run_pipeline_url(video_url)
+    import argparse
+    parser = argparse.ArgumentParser(description="直接下載單一 YouTube 影片網址並進行 ASR 轉譯。")
+    parser.add_argument("youtube_video_url", help="Youtube 影片網址")
+    parser.add_argument("--cookies", help="Path to cookies file (e.g. cookies.txt)")
+    parser.add_argument("--cookies-from-browser", help="Browser to extract cookies from (e.g. chrome, firefox, edge)")
+    args = parser.parse_args()
+    
+    run_pipeline_url(args.youtube_video_url, cookies=args.cookies, cookies_from_browser=args.cookies_from_browser)
