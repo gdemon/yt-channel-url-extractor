@@ -1,12 +1,17 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-05-25 22:50 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-05-27 21:08 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：解決 `yt-dlp` 的 YouTube 機器人防爬蟲/驗證問題，增加 Cookies 與瀏覽器 Cookie 提取功能。
-- **系統狀態**：全部主要指令已升級為 argparse 解析引數，支援 `--cookies` 及 `--cookies-from-browser`，並能在根目錄自動偵測 `cookies.txt` 以無痛載入。測試腳本與說明文件已同步完成。
+- **目前專注的任務**：優化 `run_pipeline.py` 以避免重複下載與轉譯已存在的音檔。
+- **系統狀態**：全部主要指令運作正常，且 `run_pipeline.py` 已支援先行檢查音檔是否存在以避免 redundant downloads / ASR 轉譯。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
-- **新增 Cookie 及瀏覽器 Cookie 驗證機制**：
+- **新增最新音檔已存在時跳過之邏輯**：
+  - 在 `run_pipeline.py` 中，透過 `yt_dlp.YoutubeDL` 先以 `download=False` 模式抓取今日最新影片的詳細資訊，以計算預期檔名（例如 `expected_file`）。
+  - 若 `expected_file` 已經存在於本地，則在下載前安全跳過 (skip) 整個流程，避免重複下載與 ASR 轉譯。
+  - 此重構優化了網路資源及本地 GPU 的使用效率。
+
+- **新增 Cookie 及瀏覽器 Cookie 驗證機制 (先前 Session)**：
   - **自動偵測功能**：當專案根目錄下存在 `cookies.txt` 時，所有指令（`main.py`、`run_pipeline.py`、`run_pipeline_url.py`）會自動加載，無須額外參數。
   - **命令列支援**：所有主要 Python 腳本皆升級為 `argparse`，並統一支援 `--cookies` 及 `--cookies-from-browser`。
   - **腳本與文檔**：於 `scripts/test/` 新增 `test_cookies.bat`，並於 `doc/` 下新增 `cookies_guide.md` 提供完整指南。

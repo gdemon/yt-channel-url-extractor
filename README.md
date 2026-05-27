@@ -81,8 +81,9 @@ python run_pipeline.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID"
 ```
 This script acts as the master controller:
 1. It uses `main.py` to check for new videos today.
-2. It natively extracts the highest quality audio (without re-encoding) and retrieves the exact `webm` format file.
-3. It passes the audio file automatically to `asr_converter.py` which loads the `faster-whisper` AI model into your GPU and outputs a precise `.txt` transcript with timestamps.
+2. It checks if the audio file for the latest video already exists locally. If so, it skips downloading and transcribing to avoid redundant effort.
+3. If not, it natively extracts the highest quality audio (without re-encoding) and retrieves the exact `webm` format file.
+4. It passes the audio file automatically to `asr_converter.py` which loads the `faster-whisper` AI model into your GPU and outputs a precise `.txt` transcript with timestamps.
 
 ### Method 4: Direct URL Pipeline (Download & Transcribe)
 If you already have a specific YouTube video URL and want to bypass the daily channel check to directly download and transcribe it, use `run_pipeline_url.py`:

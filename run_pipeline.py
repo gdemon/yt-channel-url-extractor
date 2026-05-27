@@ -14,7 +14,6 @@ def run_pipeline(url, cookies=None, cookies_from_browser=None):
         return
         
     print(f"Found latest video: {video_url}")
-    print("Starting download...")
     
     # 設定下載參數 (使用回原本的 251 format)
     ydl_opts_download = {
@@ -32,6 +31,15 @@ def run_pipeline(url, cookies=None, cookies_from_browser=None):
         ydl_opts_download['cookiefile'] = 'cookies.txt'
         
     with yt_dlp.YoutubeDL(ydl_opts_download) as ydl:
+        # 先取得詳細資訊 (download=False) 以計算預期的檔名
+        info = ydl.extract_info(video_url, download=False)
+        expected_file = ydl.prepare_filename(info)
+        
+        if os.path.exists(expected_file):
+            print(f"Latest audio file already exists: {expected_file}. Skipping to avoid redundant effort.")
+            return
+            
+        print("Starting download...")
         # download=True 順便下載檔案並取得詳細資訊
         info = ydl.extract_info(video_url, download=True)
         
@@ -39,7 +47,7 @@ def run_pipeline(url, cookies=None, cookies_from_browser=None):
         if 'requested_downloads' in info:
             downloaded_file = info['requested_downloads'][0]['filepath']
         else:
-            downloaded_file = ydl.prepare_filename(info)
+            downloaded_file = expected_file
             
     print(f"\nDownload complete! File saved at: {downloaded_file}")
     print("Starting ASR conversion...")
