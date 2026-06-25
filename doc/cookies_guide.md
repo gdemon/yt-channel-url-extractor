@@ -34,9 +34,11 @@ ERROR: [youtube] OwP0EqPgFBw: Sign in to confirm you’re not a bot. Use --cooki
     ```bash
     python main.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST" --cookies-from-browser chrome
     ```
-  * **完整流水線 (run_pipeline.py)**:
+  * **完整流水線 (run_pipeline.py / run_pipeline_api.py)**:
     ```bash
     python run_pipeline.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST" --cookies-from-browser chrome
+    # 或使用 API 版本
+    python run_pipeline_api.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST" --cookies-from-browser chrome
     ```
   * **直接轉譯影片 (run_pipeline_url.py)**:
     ```bash

@@ -85,7 +85,14 @@ This script acts as the master controller:
 3. If not, it natively extracts the highest quality audio (without re-encoding) and retrieves the exact `webm` format file.
 4. It passes the audio file automatically to `asr_converter.py` which loads the `faster-whisper` AI model into your GPU and outputs a precise `.txt` transcript with timestamps.
 
-### Method 4: Direct URL Pipeline (Download & Transcribe)
+### Method 4: API-based Automation Pipeline (Google Speech Recognition API)
+If you want to run the pipeline but do not have an NVIDIA GPU or do not want to download the local Whisper model, you can use `run_pipeline_api.py`. This script uses Google's free/anonymous Speech Recognition API:
+```bash
+python run_pipeline_api.py "https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID"
+```
+This script works identically to `run_pipeline.py`, but it runs ASR via the internet-based Google API (in chunks of 30 seconds, using parallel workers).
+
+### Method 5: Direct URL Pipeline (Download & Transcribe)
 If you already have a specific YouTube video URL and want to bypass the daily channel check to directly download and transcribe it, use `run_pipeline_url.py`:
 ```bash
 python run_pipeline_url.py "https://www.youtube.com/watch?v=KzndAUJQZgI"

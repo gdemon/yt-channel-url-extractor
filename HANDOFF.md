@@ -1,11 +1,17 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-05-27 21:08 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-06-25 21:37 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：優化 `run_pipeline.py` 以避免重複下載與轉譯已存在的音檔。
-- **系統狀態**：全部主要指令運作正常，且 `run_pipeline.py` 已支援先行檢查音檔是否存在以避免 redundant downloads / ASR 轉譯。
+- **目前專注的任務**：已完成 `run_pipeline_api.py` 的實作與測試腳本配置。
+- **系統狀態**：全部主要指令與 API 流水線均運作正常。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
+- **實作 API 版本的一鍵執行流水線 (`run_pipeline_api.py`)**：
+  - 新增 `run_pipeline_api.py`，串接 `main.py` 檢查最新影片下載，並呼叫 `scripts/transcribe_api.py`（Google Speech Recognition API）來處理轉譯，不依賴本機 GPU 及 Whisper 模型。
+  - 新增測試腳本 `scripts/test/test_pipeline_api.bat` 供快速測試與驗證。
+  - 更新 `PROJECT_CONTEXT.md` 與 `README.md` 以同步最新工具與使用說明。
+  - 更新 `requirements.txt` 以補齊 `transcribe_api.py` 依賴的 `pydub` 與 `SpeechRecognition` 套件。
+
 - **新增最新音檔已存在時跳過之邏輯**：
   - 在 `run_pipeline.py` 中，透過 `yt_dlp.YoutubeDL` 先以 `download=False` 模式抓取今日最新影片的詳細資訊，以計算預期檔名（例如 `expected_file`）。
   - 若 `expected_file` 已經存在於本地，則在下載前安全跳過 (skip) 整個流程，避免重複下載與 ASR 轉譯。
