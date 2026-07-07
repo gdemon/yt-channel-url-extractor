@@ -1,4 +1,4 @@
-yt-dlp>=2024.03.10
+yt-dlp>=2026.07.04
 requests>=2.31.0
 faster-whisper>=1.0.0
 nvidia-cublas-cu12
