@@ -7,9 +7,9 @@ from asr_converter import convert_audio_to_text
 def run_pipeline_url(video_url, cookies=None, cookies_from_browser=None):
     print(f"Starting download for video URL: {video_url}")
     
-    # 設定下載參數 (使用回原本的 251 format)
+    # 設定下載參數 (優先使用 251 format，遇 403 障礙時自動 fallback 至 bestaudio)
     ydl_opts_download = {
-        'format': '251',
+        'format': '251/bestaudio/best',
         'outtmpl': '%(title)s.%(ext)s',
         'quiet': False,
         'no_warnings': True,

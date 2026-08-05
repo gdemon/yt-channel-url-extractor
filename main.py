@@ -123,7 +123,7 @@ if __name__ == "__main__":
             import os
             print("開始下載音檔...", file=sys.stderr)
             ydl_opts_download = {
-                'format': '251',
+                'format': '251/bestaudio/best',
                 'outtmpl': '%(title)s.%(ext)s',
                 'quiet': False,
                 'no_warnings': True,
