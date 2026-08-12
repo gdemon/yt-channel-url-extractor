@@ -1,15 +1,15 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-08-05 21:30 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-08-12 21:45 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：已修復 `test_download_api.bat` 執行時拋出 `HTTP Error 403: Forbidden` 錯誤，並完成音訊格式自動退避 (Format Fallback) 與文件補充。
+- **目前專注的任務**：修復 `test_download_api.bat` 執行時拋出 `HTTP Error 403: Forbidden` 錯誤，更新 `yt-dlp` 下載配置（新增 `player_client` 退避與 Context 隔離），並同步更新文件。
 - **系統狀態**：全部主要指令、音效下載及 API / GPU 轉譯流水線均運作正常。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
 - **修復 `yt-dlp` 下載拋出 HTTP Error 403: Forbidden 問題**：
-  - **升級套件**：將虛擬環境中的 `yt-dlp` 升級至最新版本（2026.7.4+），修復 YouTube 串流 Cipher / Player JS Token 變更導致的 HTTP 403 阻擋。
-  - **音訊格式自動退避 (Format Fallback)**：將 `run_pipeline_api.py`、`run_pipeline.py`、`run_pipeline_url.py` 與 `main.py` 的下載格式設定由單一 `'251'` 調整為 `'251/bestaudio/best'`，當首選 Opus 格式受阻或缺檔時自動退避至最佳可用音軌，確保管線不中斷。
-  - **新增障礙排除文件**：於 `doc/troubleshooting.md` 中新增完整的 403 錯誤排除與格式退避機制說明。
+  - **Player Client 自動退避**：在 `run_pipeline_api.py`、`run_pipeline.py`、`run_pipeline_url.py` 與 `main.py` 的 `ydl_opts_download` 加入 `'extractor_args': {'youtube': {'player_client': ['android', 'web']}}`。當 YouTube Web 端 CDN 回傳 HTTP 403 時，會自動 switch 至 Android Player API，避開簽名/SABR 阻擋。
+  - **Context 隔離與 Token 過期防範**：將預檢資訊 (`download=False`) 與實際下載 (`download=True`) 拆為獨立的 `yt_dlp.YoutubeDL` 上下文，避免舊有串流 URL Signature Token 過期的問題。
+  - **更新障礙排除文件**：於 [doc/troubleshooting.md](file:///d:/project_git/yt-channel-url-extractor/doc/troubleshooting.md) 補充 403 跨 Client 降級與獨立 Context 的處理機制說明。
 
 - **實作 API 版本的一鍵執行流水線 (`run_pipeline_api.py`)**：
   - 新增 `run_pipeline_api.py`，串接 `main.py` 檢查最新影片下載，並呼叫 `scripts/transcribe_api.py`（Google Speech Recognition API）來處理轉譯，不依賴本機 GPU 及 Whisper 模型。

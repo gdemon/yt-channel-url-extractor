@@ -31,5 +31,10 @@ YouTube 經常升級影音串流簽名（Cipher / Player JS / SABR Token 驗證�
 - 系統會優先嘗試下載最高音質的 Opus 格式 (`251`)。
 - 若 `251` 受到 YouTube 403 限制或無法取得，系統會自動退避 (Fallback) 至其他可用之最佳音訊格式 (`bestaudio`/`best`)，確保管線不中斷。
 
-#### 3. 搭配 Cookie 驗證
+#### 3. 跨 Client 自動降級與獨立 Context (Player Client & Isolated Context)
+專案的核心腳本 (`run_pipeline_api.py`, `run_pipeline.py`, `run_pipeline_url.py`, `main.py`) 已加入多層防禦：
+- **Extractor Client 降級**：配置 `'extractor_args': {'youtube': {'player_client': ['android', 'web']}}`，當 Web 端的串流 URL 遭到 YouTube SABR / PoToken 限制回傳 403 時，會自動 switch 至 Android Player API 取得合法的媒體串流 URL。
+- **Context 隔離**：將檔名預檢 (`download=False`) 與實際下載 (`download=True`) 拆為獨立的 `yt_dlp.YoutubeDL` 上下文，防止過期的串流 URL Token 重複使用導致的 403 錯誤。
+
+#### 4. 搭配 Cookie 驗證
 若升級後仍遇到存取限制，請參考 [cookies_guide.md](file:///d:/project_git/yt-channel-url-extractor/doc/cookies_guide.md) 放置 `cookies.txt` 或加入 `--cookies-from-browser` 參數。

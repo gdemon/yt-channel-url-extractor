@@ -21,6 +21,7 @@ def run_pipeline_api(url, cookies=None, cookies_from_browser=None, lang="zh-TW",
         'outtmpl': '%(title)s.%(ext)s',
         'quiet': False,
         'no_warnings': True,
+        'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
     }
     
     if cookies:
@@ -39,7 +40,8 @@ def run_pipeline_api(url, cookies=None, cookies_from_browser=None, lang="zh-TW",
             print(f"Latest audio file already exists: {expected_file}. Skipping to avoid redundant effort.")
             return
             
-        print("Starting download...")
+    print("Starting download...")
+    with yt_dlp.YoutubeDL(ydl_opts_download) as ydl:
         # download=True 順便下載檔案並取得詳細資訊
         info = ydl.extract_info(video_url, download=True)
         

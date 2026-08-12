@@ -127,6 +127,7 @@ if __name__ == "__main__":
                 'outtmpl': '%(title)s.%(ext)s',
                 'quiet': False,
                 'no_warnings': True,
+                'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
             }
             if args.cookies:
                 ydl_opts_download['cookiefile'] = args.cookies

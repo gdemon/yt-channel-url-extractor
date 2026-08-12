@@ -13,6 +13,7 @@ def run_pipeline_url(video_url, cookies=None, cookies_from_browser=None):
         'outtmpl': '%(title)s.%(ext)s',
         'quiet': False,
         'no_warnings': True,
+        'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
     }
     
     if cookies:
