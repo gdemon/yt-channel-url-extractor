@@ -1,15 +1,17 @@
 # 🔄 交接檔案 (Handoff Status)
-> **最後更新時間**：2026-08-12 21:45 (每次結束 session 前請 AI 更新此時間與內容)
+> **最後更新時間**：2026-09-10 22:00 (每次結束 session 前請 AI 更新此時間與內容)
 
 ## 📌 1. 當前開發進度 (Current Status)
-- **目前專注的任務**：修復 `test_download_api.bat` 執行時拋出 `HTTP Error 403: Forbidden` 錯誤，更新 `yt-dlp` 下載配置（新增 `player_client` 退避與 Context 隔離），並同步更新文件。
-- **系統狀態**：全部主要指令、音效下載及 API / GPU 轉譯流水線均運作正常。
+- **目前專注的任務**：修復 `test_download_api.bat` 無法正常執行與看似卡住的問題：修正工作目錄切換、即時無緩衝輸出 (`-u`、`line_buffering`、`flush=True`)、音檔已存在時自動接續 ASR 轉譯而不是直接退出，以及視窗結尾 `pause`。
+- **系統狀態**：全部指令與 ASR API / Whisper 管線均運作正常，測試腳本已具備即時進度輸出與完整的錯誤反饋。
 
 ## ✅ 2. 上次 Session 完成的事項 (Completed in Last Session)
-- **修復 `yt-dlp` 下載拋出 HTTP Error 403: Forbidden 問題**：
-  - **Player Client 自動退避**：在 `run_pipeline_api.py`、`run_pipeline.py`、`run_pipeline_url.py` 與 `main.py` 的 `ydl_opts_download` 加入 `'extractor_args': {'youtube': {'player_client': ['android', 'web']}}`。當 YouTube Web 端 CDN 回傳 HTTP 403 時，會自動 switch 至 Android Player API，避開簽名/SABR 阻擋。
-  - **Context 隔離與 Token 過期防範**：將預檢資訊 (`download=False`) 與實際下載 (`download=True`) 拆為獨立的 `yt_dlp.YoutubeDL` 上下文，避免舊有串流 URL Signature Token 過期的問題。
-  - **更新障礙排除文件**：於 [doc/troubleshooting.md](file:///d:/project_git/yt-channel-url-extractor/doc/troubleshooting.md) 補充 403 跨 Client 降級與獨立 Context 的處理機制說明。
+- **修復 `test_download_api.bat` 與 `run_pipeline_api.py` 執行問題**：
+  - **工作目錄切換與防閃退**：在 `my_priv_script/test_download_api.bat` (及 `test_download.bat`) 開頭加入 `cd /d "%~dp0\.."` 確保執行時位於專案根目錄，解決音檔被下載到子目錄與找不到根目錄 `cookies.txt` 的問題；結尾加入 `pause` 避免雙擊時視窗瞬間關閉。
+  - **即時無緩衝輸出**：批次檔執行 Python 加入 `-u` 參數，並在 `scripts/transcribe_api.py` 配置 `line_buffering=True` 以及為所有 `print` 加入 `flush=True`，解決 ASR 轉譯期間終端機看似當機、毫無輸出的問題。
+  - **音檔存在時自動接續 ASR**：優化 `run_pipeline_api.py` 的重複檔案檢查邏輯。若音訊/影片檔已存在，會檢查逐字稿 (`.txt`) 是否存在：若兩者皆存在才略過；若只有音檔存在則自動跳過下載、直接以現存檔案進行 ASR 轉譯。
+  - **轉譯逾時保護**：在 `scripts/transcribe_api.py` 為 Google Speech Recognition API 加上 30 秒 `operation_timeout`，避免 HTTP 連線異常時無限制懸掛。
+  - **更新說明文件**：更新 [doc/troubleshooting.md](file:///d:/project_git/yt-channel-url-extractor/doc/troubleshooting.md) 補充 ASR 管線與批次檔常見問題與對策。
 
 - **實作 API 版本的一鍵執行流水線 (`run_pipeline_api.py`)**：
   - 新增 `run_pipeline_api.py`，串接 `main.py` 檢查最新影片下載，並呼叫 `scripts/transcribe_api.py`（Google Speech Recognition API）來處理轉譯，不依賴本機 GPU 及 Whisper 模型。

@@ -38,3 +38,23 @@ YouTube 經常升級影音串流簽名（Cipher / Player JS / SABR Token 驗證�
 
 #### 4. 搭配 Cookie 驗證
 若升級後仍遇到存取限制，請參考 [cookies_guide.md](file:///d:/project_git/yt-channel-url-extractor/doc/cookies_guide.md) 放置 `cookies.txt` 或加入 `--cookies-from-browser` 參數。
+
+---
+
+## 2. 批次腳本與 ASR 轉譯管線執行常見問題 (Batch Scripts & ASR Pipeline)
+
+### 1. 終端機長時間無進度輸出或看似凍結
+- **原因**：Python 在被批次檔呼叫或標準輸出重導向時，預設會使用 block buffer，導致轉譯進度 (`[x/total] Success`) 直到整個執行結束前都不會印出。
+- **解決方式**：
+  - 批次腳本執行 Python 時加上 `-u` 引數（如 `python -u run_pipeline_api.py ...`）。
+  - `transcribe_api.py` 已啟用 `line_buffering=True` 與即時 `flush=True`，確保每個 chunk 轉譯成功時即時印出進度。
+
+### 2. 視窗閃退或無法看清執行結果
+- **原因**：雙擊 `.bat` 執行時，若無 `pause`，腳本結束或遇到錯誤時 CMD 視窗會瞬間關閉。另外若未切換工作目錄，會導致檔案儲存於子目錄且找不到根目錄之 `cookies.txt`。
+- **解決方式**：
+  - 批次檔開頭加入 `cd /d "%~dp0\.."` 確保工作目錄為專案根目錄。
+  - 批次檔結尾加入 `pause` 避免視窗自動關閉。
+
+### 3. 已下載音訊但未轉譯成逐字稿 (.txt)
+- **原因**：舊版邏輯若發現目標音訊已存在，會直接終止管線，導致若上次轉譯中斷時永遠無法自動補轉。
+- **解決方式**：`run_pipeline_api.py` 已優化為：若音檔已存在但逐字稿 (`.txt`) 尚未生成，會自動跳過下載步驟，直接以現有音檔進行 ASR 轉譯；只有當音檔與逐字稿皆存在時才會完全跳過。

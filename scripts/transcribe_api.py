@@ -9,38 +9,39 @@ from pydub import AudioSegment
 from pydub.utils import make_chunks
 import speech_recognition as sr
 
-# Reconfigure stdout/stderr to UTF-8 to prevent UnicodeEncodeError on Windows console
-sys.stdout.reconfigure(encoding='utf-8')
-sys.stderr.reconfigure(encoding='utf-8')
+# Reconfigure stdout/stderr to UTF-8 and enable line buffering to prevent delayed console output
+sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
+sys.stderr.reconfigure(encoding='utf-8', line_buffering=True)
 
 def check_dependencies():
     # Check if ffmpeg is in path
     if not shutil.which("ffmpeg") and not shutil.which("ffmpeg.exe"):
-        print("Error: 'ffmpeg' was not found on your system PATH.", file=sys.stderr)
-        print("Please ensure FFmpeg is installed and added to your PATH.", file=sys.stderr)
+        print("Error: 'ffmpeg' was not found on your system PATH.", file=sys.stderr, flush=True)
+        print("Please ensure FFmpeg is installed and added to your PATH.", file=sys.stderr, flush=True)
         return False
     return True
 
 def transcribe_chunk(chunk_path, chunk_index, total_chunks, language="zh-TW", max_retries=3):
     recognizer = sr.Recognizer()
+    recognizer.operation_timeout = 30
     for attempt in range(max_retries):
         try:
             with sr.AudioFile(chunk_path) as source:
                 audio_data = recognizer.record(source)
             text = recognizer.recognize_google(audio_data, language=language)
-            print(f"[{chunk_index + 1}/{total_chunks}] Success")
+            print(f"[{chunk_index + 1}/{total_chunks}] Success", flush=True)
             return chunk_index, text
         except sr.UnknownValueError:
-            print(f"[{chunk_index + 1}/{total_chunks}] Silent or unintelligible")
+            print(f"[{chunk_index + 1}/{total_chunks}] Silent or unintelligible", flush=True)
             return chunk_index, ""
         except sr.RequestError as e:
-            print(f"[{chunk_index + 1}/{total_chunks}] Attempt {attempt + 1} failed: {e}")
+            print(f"[{chunk_index + 1}/{total_chunks}] Attempt {attempt + 1} failed: {e}", flush=True)
             if attempt < max_retries - 1:
                 time.sleep(random.uniform(2, 5))
             else:
                 return chunk_index, f" [Transcription Error: {e}] "
         except Exception as e:
-            print(f"[{chunk_index + 1}/{total_chunks}] Error: {e}")
+            print(f"[{chunk_index + 1}/{total_chunks}] Error: {e}", flush=True)
             return chunk_index, f" [Error: {e}] "
 
 def main():
@@ -58,7 +59,7 @@ def main():
 
     mp3_path = os.path.abspath(args.input)
     if not os.path.exists(mp3_path):
-        print(f"Error: Input file does not exist: {mp3_path}", file=sys.stderr)
+        print(f"Error: Input file does not exist: {mp3_path}", file=sys.stderr, flush=True)
         sys.exit(1)
 
     if args.output:
@@ -71,22 +72,22 @@ def main():
     os.makedirs(temp_dir, exist_ok=True)
 
     try:
-        print("Loading audio file...")
+        print("Loading audio file...", flush=True)
         audio = AudioSegment.from_file(mp3_path)
         
-        print("Chunking audio...")
+        print("Chunking audio...", flush=True)
         chunks = make_chunks(audio, args.chunk_size)
         total_chunks = len(chunks)
-        print(f"Created {total_chunks} chunks.")
+        print(f"Created {total_chunks} chunks.", flush=True)
 
-        print("Exporting chunks to WAV files...")
+        print("Exporting chunks to WAV files...", flush=True)
         chunk_paths = []
         for idx, chunk in enumerate(chunks):
             chunk_path = os.path.join(temp_dir, f"chunk_{idx}.wav")
             chunk.export(chunk_path, format="wav")
             chunk_paths.append(chunk_path)
         
-        print(f"Starting transcription using Google Speech Recognition API ({args.lang}) with {args.workers} workers...")
+        print(f"Starting transcription using Google Speech Recognition API ({args.lang}) with {args.workers} workers...", flush=True)
         results = {}
         
         with ThreadPoolExecutor(max_workers=args.workers) as executor:
@@ -106,21 +107,21 @@ def main():
         
         final_text = "\n".join(full_transcript)
         
-        print(f"Saving transcript to {output_path}...")
+        print(f"Saving transcript to {output_path}...", flush=True)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(final_text)
             
     except Exception as e:
-        print(f"An unexpected error occurred during transcription: {e}", file=sys.stderr)
+        print(f"An unexpected error occurred during transcription: {e}", file=sys.stderr, flush=True)
     finally:
-        print("Cleaning up temporary chunk files...")
+        print("Cleaning up temporary chunk files...", flush=True)
         try:
             if os.path.exists(temp_dir):
                 shutil.rmtree(temp_dir)
         except Exception as e:
-            print(f"Failed to clean up temp dir: {e}", file=sys.stderr)
+            print(f"Failed to clean up temp dir: {e}", file=sys.stderr, flush=True)
             
-    print("Done!")
+    print("Done!", flush=True)
 
 if __name__ == "__main__":
     main()
