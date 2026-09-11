@@ -58,3 +58,10 @@ YouTube 經常升級影音串流簽名（Cipher / Player JS / SABR Token 驗證�
 ### 3. 已下載音訊但未轉譯成逐字稿 (.txt)
 - **原因**：舊版邏輯若發現目標音訊已存在，會直接終止管線，導致若上次轉譯中斷時永遠無法自動補轉。
 - **解決方式**：`run_pipeline_api.py` 已優化為：若音檔已存在但逐字稿 (`.txt`) 尚未生成，會自動跳過下載步驟，直接以現有音檔進行 ASR 轉譯；只有當音檔與逐字稿皆存在時才會完全跳過。
+
+### 4. 產生的音訊與逐字稿未儲存在外部批次檔指定目錄 (Output Directory Configuration)
+- **原因**：外部批次檔（例如 `ast.bat`）中切換了工作目錄（例如 `cd /d C:\Users\...\ast`），但呼叫的子批次檔（例如 `test_download_api.bat`）內部會執行 `cd /d "%~dp0\.."` 將工作目錄切回專案根目錄，導致檔案被預設下載至專案根目錄。
+- **解決方式**：
+  - 各管線腳本（`run_pipeline_api.py`、`run_pipeline.py`、`run_pipeline_url.py`、`main.py`）均已支援 `-o / --output-dir` 參數，並會自動優先讀取環境變數 `OUTPUT_DIR`。
+  - 在外層批次檔中加入 `set "OUTPUT_DIR=C:\目標目錄"`，即可讓下載音檔及 `.txt` 逐字稿自動統一儲存至該指定目錄。
+

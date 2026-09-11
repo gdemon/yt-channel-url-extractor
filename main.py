@@ -107,6 +107,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="給定 Youtube 頻道或清單網址，若最新影片為今日發佈則抓出其網址。")
     parser.add_argument("channel_url", help="Youtube 網址 (例如頻道或播放清單)")
     parser.add_argument("-d", "--download", action="store_true", help="若今日有新影片，自動下載其音檔 (format 251)")
+    parser.add_argument("-o", "--output-dir", help="音檔儲存目錄 (預設為當前目錄，或環境變數 OUTPUT_DIR)")
     parser.add_argument("--cookies", help="Path to cookies file (e.g. cookies.txt)")
     parser.add_argument("--cookies-from-browser", help="Browser to extract cookies from (e.g. chrome, firefox, edge)")
     args = parser.parse_args()
@@ -122,9 +123,17 @@ if __name__ == "__main__":
         if args.download:
             import os
             print("開始下載音檔...", file=sys.stderr)
+            output_dir = args.output_dir or os.environ.get("OUTPUT_DIR")
+            if output_dir:
+                output_dir = os.path.abspath(output_dir)
+                os.makedirs(output_dir, exist_ok=True)
+                outtmpl_pattern = os.path.join(output_dir, '%(title)s.%(ext)s')
+            else:
+                outtmpl_pattern = '%(title)s.%(ext)s'
+
             ydl_opts_download = {
                 'format': '251/bestaudio/best',
-                'outtmpl': '%(title)s.%(ext)s',
+                'outtmpl': outtmpl_pattern,
                 'quiet': False,
                 'no_warnings': True,
                 'extractor_args': {'youtube': {'player_client': ['android', 'web']}},

@@ -5,7 +5,13 @@ import subprocess
 
 from main import get_today_latest_video_url
 
-def run_pipeline_api(url, cookies=None, cookies_from_browser=None, lang="zh-TW", workers=5, chunk_size=30000):
+def run_pipeline_api(url, output_dir=None, cookies=None, cookies_from_browser=None, lang="zh-TW", workers=5, chunk_size=30000):
+    output_dir = output_dir or os.environ.get("OUTPUT_DIR")
+    if output_dir:
+        output_dir = os.path.abspath(output_dir)
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"Output directory: {output_dir}", flush=True)
+
     print(f"Checking URL: {url}", flush=True)
     video_url = get_today_latest_video_url(url, cookies=cookies, cookies_from_browser=cookies_from_browser)
     
@@ -15,10 +21,12 @@ def run_pipeline_api(url, cookies=None, cookies_from_browser=None, lang="zh-TW",
         
     print(f"Found latest video: {video_url}", flush=True)
     
+    outtmpl_pattern = os.path.join(output_dir, '%(title)s.%(ext)s') if output_dir else '%(title)s.%(ext)s'
+
     # 設定下載參數 (優先使用 251 format，遇 403 障礙時自動 fallback 至 bestaudio)
     ydl_opts_download = {
         'format': '251/bestaudio/best',
-        'outtmpl': '%(title)s.%(ext)s',
+        'outtmpl': outtmpl_pattern,
         'quiet': False,
         'no_warnings': True,
         'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
@@ -102,6 +110,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="一鍵執行 YouTube 影片下載與 Google Speech API ASR 轉譯管線。")
     parser.add_argument("youtube_url", help="Youtube 頻道或播放清單網址")
+    parser.add_argument("-o", "--output-dir", help="輸出音訊與逐字稿目錄 (預設為當前目錄，或環境變數 OUTPUT_DIR)")
     parser.add_argument("--cookies", help="Path to cookies file (e.g. cookies.txt)")
     parser.add_argument("--cookies-from-browser", help="Browser to extract cookies from (e.g. chrome, firefox, edge)")
     parser.add_argument("--lang", default="zh-TW", help="Language code (default: zh-TW)")
@@ -111,6 +120,7 @@ if __name__ == "__main__":
     
     run_pipeline_api(
         args.youtube_url, 
+        output_dir=args.output_dir,
         cookies=args.cookies, 
         cookies_from_browser=args.cookies_from_browser,
         lang=args.lang,

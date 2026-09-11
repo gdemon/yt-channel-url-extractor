@@ -59,7 +59,11 @@ python main.py "https://www.youtube.com/@YouTube" --cookies-from-browser chrome
 
 # Bypass bot verification using a specific cookies file
 python main.py "https://www.youtube.com/@YouTube" --cookies "C:\path\to\cookies.txt"
+
+# Specify custom output directory for downloaded audio / transcripts
+python main.py "https://www.youtube.com/@YouTube" -d -o "C:\path\to\output"
 ```
+*(Note: You can also set the `OUTPUT_DIR` environment variable, which all pipeline scripts will automatically honor).*
 
 > [!TIP]
 > **Bypassing Bot Verification**: If you encounter the error `Sign in to confirm you’re not a bot`, you can export your cookies in Netscape format and save them as `cookies.txt` in the project root directory. The script will automatically load it. For full details on cookie extraction and other browser options, see [cookies_guide.md](file:///D:/project_git/yt-channel-url-extractor/doc/cookies_guide.md).
